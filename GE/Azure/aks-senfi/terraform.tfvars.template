@@ -1,0 +1,15 @@
+serviceprinciple_id="${SERVICE_PRINCIPAL}"
+
+serviceprinciple_key="${SERVICE_PRINCIPAL_SECRET}"
+
+tenant_id="${TENTANT_ID}"
+
+ssh_key="$SSH_KEY"
+
+subscription_id = "$SUBSCRIPTION"
+
+location="australiaeast"
+
+kubernetes_version="1.23.8"
+
+storage_account_name="akssenfi32355"

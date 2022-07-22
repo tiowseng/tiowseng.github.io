@@ -1,0 +1,16 @@
+serviceprinciple_id="3e1d5695-fd7d-4a8b-872c-ae2f4b3dd67c"
+
+serviceprinciple_key="BH48Q~qBenM.xVE6KCdR6sDo7XWjSvqa0zrwvc6s"
+
+tenant_id="5ba5ef5e-3109-4e77-85bd-cfeb0d347e82"
+
+subscription_id = "70010d53-c3c3-4599-8f13-63ca0491ef27"
+
+ssh_key="ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQC03Bgf6wCo/hJe4TFD+S++Ja7hCif51aqCWHmZ6Z2Pdhs61YcmbGfSjdcxLNeNrT0+T5PpoJSDez94bm3JXjIXjmfDDAfxwcMjzOR5MoxdhecFX8G9P47hCHcH7u/Kd2z7byFWUhzfkzVvF8+jAI1HfmvoPlKRt8N23dT5KqebtQIiIYMbMNTbsE1AX52qx0e3zcW1CyHNniX+HtBAFsgZCrBWKRQmQ66dVMrskOWglh+E2G6U3Ju/mK63+tPI9T8jv2etLhofhsvPigc0cgKZgqe7lYSIjbaONAdfRN+xdba6xKiUM4tGiSjsjDG7dE8xLoUaYHDKESgtLhXaN7gGNwI4/7MIaoYrfGDe/ypBi7bHhuk/P8C3R5wiSjBbqdw5k19hPnW2lDeyXWvBN76L6hSljXPfUtlXPNfU0IQWbnPcqSATScm0xc+MnMDV5z9apMaTixFdljo13EoyRY7ARUQC0Gnj5USdeUvH27ClD8xU0A66ggqGuTWD6bUJLj0v2XUVGKS7+cz9G6LhrnbHyoaRoHmWUtTDImpvT8ocRUv76FOeteCXmH5va5zgEJtnWYilLL7p5BY+xEimLET0yyU1zjQNBVhz209Uyx2oLnMlZvYL6ZJ43QT1YhhBKYqA24+F9EXtM3CscaFyvUIlt+vz+xfW7OgyU/mJKP8e1w== your_email@example.com"
+
+location="australiaeast"
+
+kubernetes_version="1.23.8"
+
+storage_account_name="akssenfi32355"
+

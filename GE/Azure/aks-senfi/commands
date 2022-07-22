@@ -1,0 +1,54 @@
+az login --use-device-code
+
+# keep TENTANT_ID
+
+az account list -o table
+
+# keep SUBSCRIPTION
+
+RESOURCEGROUP=akssenfi
+LOCATION=australiaeast
+az group create -n $RESOURCEGROUP -l $LOCATION
+
+SERVICE_PRINCIPAL_JSON=$(az ad sp create-for-rbac --name akssenfi-sp -o json)
+SERVICE_PRINCIPAL=$(echo $SERVICE_PRINCIPAL_JSON | jq -r '.appId')
+SERVICE_PRINCIPAL_SECRET=$(echo $SERVICE_PRINCIPAL_JSON | jq -r '.password')
+
+az role assignment create --assignee $SERVICE_PRINCIPAL \
+--scope "/subscriptions/$SUBSCRIPTION/resourceGroups/$RESOURCEGROUP" --role Contributor
+
+# Generate SSH key
+
+```
+ssh-keygen -t rsa -b 4096 -N "VeryStrongSecret123!" -C "your_email@example.com" -q -f  ~/.ssh/id_rsa
+SSH_KEY=$(cat ~/.ssh/id_rsa.pub)
+```
+
+# before this line - the above are standard...
+STORAGE_ACCOUNT_NAME=$RESOURCEGROUP$RANDOM   # akssenfi32355
+CONTAINER_NAME=$RESOURCEGROUP
+
+az storage account create --resource-group $RESOURCEGROUP --name $STORAGE_ACCOUNT_NAME --sku Standard_LRS --encryption-services blob
+
+az storage container create --name $CONTAINER_NAME --account-name $STORAGE_ACCOUNT_NAME
+
+# substitute variables
+docker run cmd.cat/envsubst envsubst
+envsubst < terraform.tfvars.template > terraform.tfvars
+
+# terraform
+terraform init
+
+terraform import azurerm_resource_group.akssenfi /subscriptions/$SUBSCRIPTION/resourceGroups/akssenfi
+
+terraform plan -var serviceprinciple_id=$SERVICE_PRINCIPAL \
+    -var serviceprinciple_key="$SERVICE_PRINCIPAL_SECRET" \
+    -var tenant_id=$TENTANT_ID \
+    -var subscription_id=$SUBSCRIPTION \
+    -var ssh_key="$SSH_KEY"
+
+terraform apply -var serviceprinciple_id=$SERVICE_PRINCIPAL \
+    -var serviceprinciple_key="$SERVICE_PRINCIPAL_SECRET" \
+    -var tenant_id=$TENTANT_ID \
+    -var subscription_id=$SUBSCRIPTION \
+    -var ssh_key="$SSH_KEY"
