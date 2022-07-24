@@ -164,6 +164,13 @@ kubectl apply -n testingnamespace -f deployments/deployment.yaml
 # here is the old way with:
 #   kubectl autoscale deployment xxx --cpu-percent=50 --min=1 --max=10
 
+git add ...
+git commit
+
+git status
+git push
+git reset --soft HEAD~n  # to uncommit n times...this is to do after commit
+git restore --staged filenamedirectory
 
 
 
