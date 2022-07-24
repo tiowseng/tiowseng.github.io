@@ -1,6 +1,6 @@
 serviceprinciple_id="3e1d5695-fd7d-4a8b-872c-ae2f4b3dd67c"
 
-serviceprinciple_key="BH48Q~qBenM.xVE6KCdR6sDo7XWjSvqa0zrwvc6s"
+serviceprinciple_key="u.o8Q~YmmpxhhsYIJFthx6Mt1is6n2NBT4DtEcKn" 
 
 tenant_id="5ba5ef5e-3109-4e77-85bd-cfeb0d347e82"
 
@@ -12,5 +12,4 @@ location="australiaeast"
 
 kubernetes_version="1.23.8"
 
-storage_account_name="akssenfi32355"
 

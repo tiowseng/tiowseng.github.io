@@ -1,3 +1,36 @@
+git add fileOrDirectory
+git status
+git commit 
+git push
+
+southeastasia has limited machine: https://azureprice.net/?region=australiaeast&sortField=linuxPrice&sortOrder=true
+
+## Get kubectl
+
+You have two options for installing `kubectl` <br/>
+
+Option 1: Install using `az` CLI
+
+```
+az aks install-cli
+```
+
+Option 2: Download the binary using `curl` and place in usr bin
+
+```
+curl -LO https://storage.googleapis.com/kubernetes-release/release/`curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt`/bin/linux/amd64/kubectl
+chmod +x ./kubectl
+mv ./kubectl /usr/local/bin/kubectl
+
+```
+remember to use "sudo mv ...." if permission denied. 
+
+## set up docker to use azure and terraform etc.
+https://code.visualstudio.com/docs/remote/containers
+
+
+
+
 az login --use-device-code
 
 # keep TENTANT_ID
@@ -7,15 +40,16 @@ az account list -o table
 # keep SUBSCRIPTION
 
 RESOURCEGROUP=akssenfi
-LOCATION=australiaeast
+LOCATION=australiaeast  or LOCATION=southeastasia
 az group create -n $RESOURCEGROUP -l $LOCATION
 
 SERVICE_PRINCIPAL_JSON=$(az ad sp create-for-rbac --name akssenfi-sp -o json)
-SERVICE_PRINCIPAL=$(echo $SERVICE_PRINCIPAL_JSON | jq -r '.appId')
-SERVICE_PRINCIPAL_SECRET=$(echo $SERVICE_PRINCIPAL_JSON | jq -r '.password')
+SERVICE_PRINCIPAL=$(echo $SERVICE_PRINCIPAL_JSON | jq -r '.appId')        # 3e1d5695-fd7d-4a8b-872c-ae2f4b3dd67c
+SERVICE_PRINCIPAL_SECRET=$(echo $SERVICE_PRINCIPAL_JSON | jq -r '.password') # u.o8Q~YmmpxhhsYIJFthx6Mt1is6n2NBT4DtEcKn
 
 az role assignment create --assignee $SERVICE_PRINCIPAL \
 --scope "/subscriptions/$SUBSCRIPTION/resourceGroups/$RESOURCEGROUP" --role Contributor
+
 
 # Generate SSH key
 
@@ -25,7 +59,7 @@ SSH_KEY=$(cat ~/.ssh/id_rsa.pub)
 ```
 
 # before this line - the above are standard...
-STORAGE_ACCOUNT_NAME=$RESOURCEGROUP$RANDOM   # akssenfi32355
+STORAGE_ACCOUNT_NAME=akssenfi32355   # or $RESOURCEGROUP$RANDOM   # akssenfi32355
 CONTAINER_NAME=$RESOURCEGROUP
 
 az storage account create --resource-group $RESOURCEGROUP --name $STORAGE_ACCOUNT_NAME --sku Standard_LRS --encryption-services blob
@@ -52,3 +86,85 @@ terraform apply -var serviceprinciple_id=$SERVICE_PRINCIPAL \
     -var tenant_id=$TENTANT_ID \
     -var subscription_id=$SUBSCRIPTION \
     -var ssh_key="$SSH_KEY"
+
+    ##############
+#
+az acr create `
+  --name=acrsenfi....
+  --resource-group=
+  --sku=Basic
+  --admin-enabled=true
+  --output=jsonc
+
+# next step: create AK cluster
+az aks create `
+    --resource-graoup=
+    --name=$CLUSTERNAME
+    --node-count=$workerNodeCount
+    --enabled-managed=identity             # ?? service principal
+    --attach-acr=$acrRegistryName
+    --output=jsonc
+
+az aks get-credentials `
+    --resource-group=$resourceGroupname `
+    --name=$CLUSTERNAME
+    --overwrite-existing # or --overwrite=existing ??
+
+
+
+
+
+acrRegistryName=acrsenfiGh0SffPl
+acrUserName=$(az acr credential show --name acrsenfiGh0SffPl --query "username")
+acrUserPassword=$(az acr credential show --name acrsenfiGh0SffPl --query "passwords[0].value")
+regFullName=$(az acr show --name acrsenfiGh0SffPl --query "loginServer")
+docker login $regFullName --username $acrUserName --password $acrUserPassword
+
+
+ACR_REGISTRY_NAME=acrRegistryName
+ACR_REGISTRY_ID=$(az acr show --name $ACR_NAME --query id --output tsv)
+
+az role assignment create --assignee $SERVICE_PRINCIPAL \
+--scope ACR_REGISTRY_ID --role acrpush    #role can be : acrpull, acrpush, owner
+# ACR_REGISTRY_ID=/subscriptions/70010d53-c3c3-4599-8f13-63ca0491ef27/resourceGroups/akssenfi/providers/Microsoft.ContainerRegistry/registries/acrsenfiGh0SffPl
+
+docker login $acrRegistryName.azurecr.io --username $SERVICE_PRINCIPAL --password $SERVICE_PRINCIPAL_SECRET
+docker tag imageToUpload acrsenfigh0sffpl.azurecr.io/imageToUpload:v1  # to mark it, and then 
+docker push acrsenfigh0sffpl.azurecr.io/imageToUpload:v1               # to upload the image
+docker pull acrsenfigh0sffpl.azurecr.io/imageToUpload   # pull it 
+
+# make the image or download one with: docker pull tiowseng/docker101tutorial
+acrRegistryName=acrsenfiGh0SffPl
+in yml need to put in fully qualified name. instead of 
+   image: authorname/author:imgname....use 
+   image: $acrRegistryName.azurecr.io/depositoryname/image:tag
+   build:
+        context: src 
+        dockerfile: Dockerfile-TechTalksMQProducer
+
+# build images locally
+docker-compose -f .\docker-compose-build.yml build
+docker-compose -f .\docker-compose-build.yml push 
+
+# next, change the yml  on the deployment to change the image from public to private depository
+
+### to use kubectl ...need the following
+sudo az aks install-cli   # if not yet install
+az aks get-credentials -n akssenfi --resource-group $RESOURCEGROUP
+cp ~/.kube/config .
+## then
+kubectl create ns testingnamespace
+kubectl get nodes --all-namespaces
+kubectl get pods --all-namespaces
+kubectl apply -n testingnamespace -f secrets/secret.yaml 
+kubectl apply -n testingnamespace -f configmaps/configmap.yaml 
+kubectl apply -n testingnamespace -f deployments/deployment.yaml
+
+## to do autoscaling of nodes/pods...use: KEDA...see video: https://www.youtube.com/watch?v=-jOVplEzypY
+# here is the old way with:
+#   kubectl autoscale deployment xxx --cpu-percent=50 --min=1 --max=10
+
+
+
+
+

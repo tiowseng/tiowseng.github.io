@@ -93,8 +93,14 @@ resource "azurerm_linux_virtual_machine" "senfivm1" {
   name                = "senfivm1"
   location              = azurerm_resource_group.akssenfi.location
   resource_group_name   = azurerm_resource_group.akssenfi.name
-  size                = "Standard_E4s_v3"      
-  // size = "Standard_F2"
+  // https://azureprice.net/?region=southeastasia
+  // https://docs.microsoft.com/en-us/azure/aks/quotas-skus-regions
+  //size                = "Standard_E4s_v3"      # australiaeast
+  //size                = "Standard_E2as_v5"      # australiaeast
+  size                  = "Standard_D2s_v4"
+  //size                  = "Standard_F2" # southeastasia -- not available
+  // size                = "standard_dc2ds_v3" # southeastasia -- cannot oot hypervisor Generation '1'. 
+  // size = "standard_dc4ds_v3"
   admin_username      = "azureuser"
   network_interface_ids = [
     azurerm_network_interface.nic1.id,

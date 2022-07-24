@@ -27,12 +27,15 @@ resource "azurerm_kubernetes_cluster" "akssenfi" {
   default_node_pool {
     name       = "default"
     node_count = 1
-    //vm_size    = "Standard_D2_v2"
-    //vm_size    = "Standard_B2s"
-    vm_size   = "Standard_E4s_v3"
+    //vm_size = "standard_dc4ds_v3"  # southeastasia
+    vm_size = "Standard_D2s_v4"    # australiaeast
+    //vm_size    = "standard_dc2ds_v3"   # southeastasia
+    //vm_size    = "standard_d15_v2"     # southeastasia
+    // vm_size   = "Standard_E4s_v3"   # australiaeast
     //vm_size = "standard_dc24ds_v3"
     type       = "VirtualMachineScaleSets"
-    os_disk_size_gb = 250
+    // os_disk_size_gb = 250  # australiaeast
+    os_disk_size_gb = 64
     enable_node_public_ip = "true"
     vnet_subnet_id = azurerm_subnet.akssubnet.id
   }
